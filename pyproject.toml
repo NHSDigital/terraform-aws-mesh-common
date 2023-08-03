@@ -1,0 +1,25 @@
+[tool.poetry]
+name = "terraform_aws_mesh_common"
+version = "0.0.1"
+description = ""
+authors = ["mesh"]
+license = "MIT"
+packages = [
+]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+# core dependencies
+python = ">=3.10,<4.0"
+
+[tool.poetry.group.dev.dependencies]
+pre-commit= "^3.3.3"
+
+[tool.poetry-dynamic-versioning.substitution]
+folders = [
+    { path = "./" }
+]
+
+[build-system]
+requires = ["poetry>=1.2", "poetry-dynamic-versioning"]
+build-backend = "poetry_dynamic_versioning.backend"
