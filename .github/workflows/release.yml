@@ -1,0 +1,55 @@
+name: Release
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - develop
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    # Skip running release workflow on forks
+    if: github.repository_owner == 'NHSDigital' && github.actor != 'dependabot[bot]' && !contains(github.event.head_commit.message, 'tag release version:')
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Clean
+        run: |
+          git clean -fdx
+          find . -type f | xargs chmod g+w
+
+      - name: Setup python
+        uses: actions/setup-python@v3
+        with:
+          python-version: "3.10"
+
+      - name: Setup poetry
+        uses: abatilo/actions-poetry@v2
+        with:
+          poetry-version: 1.5.1
+
+      - name: Add poetry plugins
+        run: |
+          poetry self add "poetry-dynamic-versioning[plugin]"
+
+      - name: Tag version
+        run: |
+          version="v$(poetry version patch | rev | cut -d' ' -f1 | rev)"
+          echo "RELEASE_VERSION=$version" >> $GITHUB_ENV
+          git tag $version
+
+      - name: Create release
+        id: create_release
+        uses: actions/create-release@v1
+        continue-on-error: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ env.RELEASE_VERSION }}
+          release_name: ${{ env.RELEASE_VERSION }}
