@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "terraform_aws_mesh_common"
-version = "0.0.1"
+version = "0.0.2"
 description = ""
 authors = ["mesh"]
 license = "MIT"
@@ -14,6 +14,19 @@ python = ">=3.10,<4.0"
 
 [tool.poetry.group.dev.dependencies]
 pre-commit= "^3.3.3"
+
+[tool.poetry-dynamic-versioning]
+enable = true
+metadata = false
+vcs = "git"
+style = "pep440"
+format-jinja = """
+    {%- if distance == 0 -%}
+        {{ serialize_pep440(base, stage, revision) }}
+    {%- else -%}
+        {{ serialize_pep440(bump_version(base), stage, revision, dev=timestamp) }}
+    {%- endif -%}
+"""
 
 [tool.poetry-dynamic-versioning.substitution]
 folders = [
