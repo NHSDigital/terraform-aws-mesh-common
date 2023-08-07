@@ -27,7 +27,7 @@ resource "aws_cloudwatch_metric_alarm" "lambda_metric_alarm" {
 }
 
 resource "aws_cloudwatch_log_subscription_filter" "lambda_logs_to_splunk" {
-  count           = var.splunk_firehose_arn && var.splunk_firehose_role_arn ? 1 : 0
+  count           = var.splunk_firehose_arn != null && var.splunk_firehose_role_arn != null ? 1 : 0
   name            = "${var.account}_${var.name}"
   log_group_name  = aws_cloudwatch_log_group.lambda.name
   filter_pattern  = "{ $.timestamp != \"\" }"
