@@ -1,0 +1,157 @@
+# IP preservation
+# https://docs.aws.amazon.com/elasticloadbalancing/latest/network/load-balancer-target-groups.html#client-ip-preservation:~:text=When%20you%20specify,to%20the%20target.
+#
+resource "aws_wafv2_web_acl" "waf_web_acl" {
+  name        = "${var.app_name}-web-acl"
+  description = "Only allow traffic from country list with additional allow and block lists"
+  scope       = "REGIONAL"
+
+  default_action {
+    block {}
+  }
+
+  # rate_based_statement {
+  #        limit              = 5000
+  #        aggregate_key_type = "IP"
+  #      }
+
+  rule {
+    name     = "IPAllowList"
+    priority = 1
+
+    action {
+      allow {}
+    }
+
+    statement {
+      or_statement {
+        statement {
+          ip_set_reference_statement {
+            arn = aws_wafv2_ip_set.allowlist_ipv4.arn
+          }
+        }
+        statement {
+          ip_set_reference_statement {
+            arn = aws_wafv2_ip_set.allowlist_ipv6.arn
+          }
+        }
+      }
+    }
+
+    visibility_config {
+      cloudwatch_metrics_enabled = true
+      metric_name                = "IPAllowList"
+      sampled_requests_enabled   = true
+    }
+  }
+
+  rule {
+    name     = "VPCAllowList"
+    priority = 2
+
+    action {
+      allow {}
+    }
+
+    statement {
+      ip_set_reference_statement {
+        arn = aws_wafv2_ip_set.allowlist_vpc.arn
+      }
+    }
+
+    visibility_config {
+      cloudwatch_metrics_enabled = true
+      metric_name                = "VPCAllowList"
+      sampled_requests_enabled   = true
+    }
+  }
+
+  rule {
+    name     = "IPBlockList"
+    priority = 3
+
+    action {
+      block {}
+    }
+
+    statement {
+      or_statement {
+        statement {
+          ip_set_reference_statement {
+            arn = aws_wafv2_ip_set.blocklist_ipv4.arn
+          }
+        }
+        statement {
+          ip_set_reference_statement {
+            arn = aws_wafv2_ip_set.blocklist_ipv6.arn
+          }
+        }
+      }
+    }
+
+    visibility_config {
+      cloudwatch_metrics_enabled = true
+      metric_name                = "IPBlockList"
+      sampled_requests_enabled   = true
+    }
+  }
+
+  dynamic "rule" {
+    for_each = var.managed_rules
+    content {
+      override_action {
+        count {}
+      }
+      name     = rule.value
+      priority = 10
+      statement {
+        managed_rule_group_statement {
+          name        = rule.value
+          vendor_name = "AWS"
+        }
+      }
+      visibility_config {
+        cloudwatch_metrics_enabled = true
+        metric_name                = rule.value
+        sampled_requests_enabled   = true
+      }
+    }
+  }
+
+  rule {
+    name     = "CountryAllowList"
+    priority = 99
+
+    statement {
+      geo_match_statement {
+        country_codes = var.allowed_country_codes
+      }
+    }
+
+    action {
+      allow {}
+    }
+
+    visibility_config {
+      cloudwatch_metrics_enabled = true
+      metric_name                = "CountryAllowList"
+      sampled_requests_enabled   = true
+    }
+  }
+
+  visibility_config {
+    cloudwatch_metrics_enabled = true
+    metric_name                = "Unmatched"
+    sampled_requests_enabled   = true
+  }
+
+  tags = {
+    Name = "${var.app_name}-web-acl"
+  }
+}
+
+# Associate the WebACL with the ALB
+resource "aws_wafv2_web_acl_association" "waf_alb_association" {
+  resource_arn = var.alb_arn
+  web_acl_arn  = aws_wafv2_web_acl.waf_web_acl.arn
+}
