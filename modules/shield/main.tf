@@ -4,6 +4,6 @@ resource "aws_shield_protection" "this" {
   resource_arn = each.value
 
   tags = {
-    Name = "${var.name_prefix}-${each.key}"
+    Name = "${var.app_name}-${each.key}"
   }
 }
