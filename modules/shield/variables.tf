@@ -1,4 +1,4 @@
-variable "name_prefix" {
+variable "app_name" {
   description = "Prefix for the shield protection name"
   type        = string
 }
