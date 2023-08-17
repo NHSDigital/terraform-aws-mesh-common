@@ -5,7 +5,7 @@ data "aws_vpc" "account_vpc" {
 
 resource "aws_lb" "this" {
   name    = "${var.app_name}-private-alb"
-  subnets = var.public_subnet_ids
+  subnets = var.private_subnet_ids
 
   security_groups = [aws_security_group.alb.id]
 
@@ -18,7 +18,7 @@ resource "aws_lb" "this" {
 
   access_logs {
     enabled = true
-    bucket  = var.alb_access_logs_bucket
+    bucket  = var.access_logs_bucket
     prefix  = "${var.app_name}-private-alb"
   }
 

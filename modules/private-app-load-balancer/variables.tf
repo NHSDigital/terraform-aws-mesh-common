@@ -8,8 +8,8 @@ variable "account_vpc_id" {
   type        = string
 }
 
-variable "public_subnet_ids" {
-  description = "A list of the public subnet ids for this load balancer"
+variable "private_subnet_ids" {
+  description = "A list of the private subnet ids for this load balancer"
   type        = list(string)
 }
 
@@ -24,7 +24,7 @@ variable "alb_healthcheck_path" {
   default     = "/"
 }
 
-variable "alb_access_logs_bucket" {
+variable "access_logs_bucket" {
   description = "The bucket in which the ALB's logs are stored"
   type        = string
 }
