@@ -59,6 +59,6 @@ variable "host_header_values" {
 }
 
 variable "two_char_prefix" {
-  description = "The 2 character unique value for the name prefix for the target group"
+  description = "The 2 character unique value for the name prefix for the target group for this app"
   type        = string
 }
