@@ -22,6 +22,8 @@ resource "aws_lb" "this" {
     prefix  = "${var.app_name}-private-alb"
   }
 
+  enable_deletion_protection = var.enable_deletion_protection
+
   tags = {
     LoadBalancerName = "${var.app_name}-alb"
   }

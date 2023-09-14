@@ -41,3 +41,8 @@ variable "access_logs_bucket" {
   description = "The bucket in which the LB's logs are stored"
   type        = string
 }
+
+variable "enable_deletion_protection" {
+  description = "Enable deletion protection on the LB"
+  type        = bool
+}
