@@ -33,3 +33,8 @@ variable "dummy_certificate_arn" {
   description = "The ARN of the dummy certificate on the main ALB listener"
   type        = string
 }
+
+variable "enable_deletion_protection" {
+  description = "Enable deletion protection on the LB"
+  type        = bool
+}
