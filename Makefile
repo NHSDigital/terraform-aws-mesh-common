@@ -14,6 +14,7 @@ dirname := $(notdir $(patsubst %/,%,$(CURDIR)))
 install:
 	asdf plugin-add tflint https://github.com/skyzyx/asdf-tflint || true
 	asdf plugin-add terraform-docs https://github.com/looztra/asdf-terraform-docs || true
+	asdf plugin-add tfsec https://github.com/looztra/asdf-terraform-docs || true
 	asdf install
 	poetry install --sync
 	poetry run pre-commit install

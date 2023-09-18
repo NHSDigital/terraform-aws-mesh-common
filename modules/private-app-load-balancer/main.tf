@@ -52,14 +52,15 @@ resource "aws_security_group_rule" "alb_from_vpc" {
 
 resource "aws_security_group_rule" "alb_from_anywhere" {
   # Traffic doesn't make it through to the ALB (even with no WAF) without allowing all
-  # most likely because the client ip address is being passed through
+  # most likely because the client ip address is being passed through. This rule is
+  # attached to an internal loadbalancer within a private subnet
   description       = "${var.app_name} alb in from anywhere"
   type              = "ingress"
   from_port         = var.traffic_port
   to_port           = var.traffic_port
   protocol          = "TCP"
   security_group_id = aws_security_group.alb.id
-  cidr_blocks       = ["0.0.0.0/0"]
+  cidr_blocks       = ["0.0.0.0/0"] # tfsec:ignore:aws-ec2-no-public-ingress-sgr
 }
 
 # A certificate must be specified for a HTTPS listener

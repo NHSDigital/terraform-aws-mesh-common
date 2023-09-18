@@ -1,3 +1,4 @@
+# tfsec:ignore:aws-lambda-enable-tracing
 resource "aws_lambda_function" "lambda" {
   filename = var.file_path
 
