@@ -1,3 +1,4 @@
+# tfsec:ignore:aws-elb-alb-not-public
 resource "aws_lb" "this" {
   name     = "${var.app_name}-public-nlb"
   internal = false
