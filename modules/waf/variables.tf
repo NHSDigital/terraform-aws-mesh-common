@@ -53,3 +53,9 @@ variable "allowed_country_codes" {
     "GB"
   ]
 }
+
+variable "ip_rate_limit" {
+  description = "Request limit per IP over 5m"
+  type        = number
+  default     = 5000
+}

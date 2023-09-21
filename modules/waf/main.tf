@@ -10,10 +10,6 @@ resource "aws_wafv2_web_acl" "waf_web_acl" {
     block {}
   }
 
-  # rate_based_statement {
-  #        limit              = 5000
-  #        aggregate_key_type = "IP"
-  #      }
 
   rule {
     name     = "IPAllowList"
@@ -92,6 +88,28 @@ resource "aws_wafv2_web_acl" "waf_web_acl" {
     visibility_config {
       cloudwatch_metrics_enabled = true
       metric_name                = "IPBlockList"
+      sampled_requests_enabled   = true
+    }
+  }
+
+  rule {
+    name     = "IPRateLimit"
+    priority = 4
+
+    action {
+      block {}
+    }
+
+    statement {
+      rate_based_statement {
+        limit              = var.ip_rate_limit
+        aggregate_key_type = "IP"
+      }
+    }
+
+    visibility_config {
+      cloudwatch_metrics_enabled = true
+      metric_name                = "IPRateLimit"
       sampled_requests_enabled   = true
     }
   }
