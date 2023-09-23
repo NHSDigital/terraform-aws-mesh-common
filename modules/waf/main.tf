@@ -11,6 +11,7 @@ resource "aws_wafv2_web_acl" "waf_web_acl" {
   }
 
   rule {
+    # we can remove this comment, but i just wanted to raise it for code review:
     # the first 2 rules have priority 1/2 and there is short-circuit evaluation,
     # so it will allow these IPs/VPCs REGARDLESS of all other rules,
     # e.g. anything in the allowlist is implicitly rate unlimited
