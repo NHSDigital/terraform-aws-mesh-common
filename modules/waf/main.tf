@@ -10,8 +10,10 @@ resource "aws_wafv2_web_acl" "waf_web_acl" {
     block {}
   }
 
-
   rule {
+    # the first 2 rules have priority 1/2 and there is short-circuit evaluation,
+    # so it will allow these IPs/VPCs REGARDLESS of all other rules,
+    # e.g. anything in the allowlist is implicitly rate unlimited
     name     = "IPAllowList"
     priority = 1
 
@@ -92,28 +94,6 @@ resource "aws_wafv2_web_acl" "waf_web_acl" {
     }
   }
 
-  rule {
-    name     = "IPRateLimit"
-    priority = 4
-
-    action {
-      block {}
-    }
-
-    statement {
-      rate_based_statement {
-        limit              = var.ip_rate_limit
-        aggregate_key_type = "IP"
-      }
-    }
-
-    visibility_config {
-      cloudwatch_metrics_enabled = true
-      metric_name                = "IPRateLimit"
-      sampled_requests_enabled   = true
-    }
-  }
-
   dynamic "rule" {
     for_each = var.managed_rules
     content {
@@ -131,6 +111,130 @@ resource "aws_wafv2_web_acl" "waf_web_acl" {
       visibility_config {
         cloudwatch_metrics_enabled = true
         metric_name                = rule.value
+        sampled_requests_enabled   = true
+      }
+    }
+  }
+
+  rule {
+    name     = "IPRateLimit_default"
+    priority = 20
+
+    action {
+      block {
+        custom_response {
+          response_code = 429
+        }
+      }
+    }
+
+    statement {
+      rate_based_statement {
+        aggregate_key_type = "IP"
+        limit              = var.default_ip_rate_limit
+
+        scope_down_statement {
+          not_statement {
+            statement {
+              or_statement {
+                statement {
+                  ip_set_reference_statement {
+                    arn = aws_wafv2_ip_set.specified_rate_limit_ipv4_all.arn
+                  }
+                }
+                statement {
+                  ip_set_reference_statement {
+                    arn = aws_wafv2_ip_set.specified_rate_limit_ipv6_all.arn
+                  }
+                }
+                statement {
+                  ip_set_reference_statement {
+                    arn = aws_wafv2_ip_set.rate_unlimited_ipv4.arn
+                  }
+                }
+                statement {
+                  ip_set_reference_statement {
+                    arn = aws_wafv2_ip_set.rate_unlimited_ipv6.arn
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
+    visibility_config {
+      cloudwatch_metrics_enabled = true
+      metric_name                = "IPRateLimit_default"
+      sampled_requests_enabled   = true
+    }
+  }
+
+  dynamic "rule" {
+    for_each = var.specified_ip_rate_limit_ipv4_cidrs
+    content {
+      name     = "IPRateLimit_${rule.key}"
+      priority = 21
+
+      action {
+        block {
+          custom_response {
+            response_code = 429
+          }
+        }
+      }
+
+      statement {
+        rate_based_statement {
+          aggregate_key_type = "IP"
+          limit              = rule.value[1]
+
+          scope_down_statement {
+            ip_set_reference_statement {
+              arn = aws_wafv2_ip_set.specified_rate_limit_ipv4[rule.key].arn
+            }
+          }
+        }
+      }
+      visibility_config {
+        cloudwatch_metrics_enabled = true
+        metric_name                = rule.key
+        sampled_requests_enabled   = true
+      }
+    }
+  }
+
+  dynamic "rule" {
+    for_each = var.specified_ip_rate_limit_ipv6_cidrs
+    content {
+      name     = "IPRateLimit_${rule.key}"
+      priority = 22
+
+      action {
+        block {
+          custom_response {
+            response_code = 429
+          }
+        }
+      }
+
+      statement {
+        rate_based_statement {
+          aggregate_key_type = "IP"
+          limit              = rule.value[1]
+
+          scope_down_statement {
+            ip_set_reference_statement {
+              arn = aws_wafv2_ip_set.specified_rate_limit_ipv6[rule.key].arn
+            }
+          }
+        }
+      }
+
+      visibility_config {
+        cloudwatch_metrics_enabled = true
+        metric_name                = rule.key
         sampled_requests_enabled   = true
       }
     }

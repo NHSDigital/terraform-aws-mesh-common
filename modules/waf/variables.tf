@@ -54,8 +54,32 @@ variable "allowed_country_codes" {
   ]
 }
 
-variable "ip_rate_limit" {
-  description = "Request limit per IP over 5m"
+variable "default_ip_rate_limit" {
+  description = "default request limit per IP over 5m"
   type        = number
-  default     = 5000
+  default     = 100000
+}
+
+variable "unlimited_ip_rate_limit_ipv4_cidrs" {
+  description = "v4 IPs with no rate limit"
+  type        = list(string)
+  default     = []
+}
+
+variable "specified_ip_rate_limit_ipv4_cidrs" {
+  description = "v4 IPs with a specified rate limit"
+  type        = map(tuple([string, number]))
+  default     = {}
+}
+
+variable "unlimited_ip_rate_limit_ipv6_cidrs" {
+  description = "v6 IPs with no rate limit"
+  type        = list(string)
+  default     = []
+}
+
+variable "specified_ip_rate_limit_ipv6_cidrs" {
+  description = "v6 IPs with a specified rate limit"
+  type        = map(number)
+  default     = {}
 }
