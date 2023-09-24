@@ -11,10 +11,11 @@ resource "aws_wafv2_web_acl" "waf_web_acl" {
   }
 
   rule {
-    # we can remove this comment, but i just wanted to raise it for code review:
+    # COMMENT FOR CODE REVIEW (remove after):
     # the first 2 rules have priority 1/2 and there is short-circuit evaluation,
-    # so it will allow these IPs/VPCs REGARDLESS of all other rules,
-    # e.g. anything in the allowlist is implicitly rate unlimited
+    # so it will allow allowlist IPs/VPCs REGARDLESS of all other rules,
+    # e.g. anything in the allowlist ip set is implicitly rate unlimited
+    # if that is the intention, then should we get rid of the rate_unlimited ip sets (YAGNI)?
     name     = "IPAllowList"
     priority = 1
 
