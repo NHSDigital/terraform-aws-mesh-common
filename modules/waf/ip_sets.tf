@@ -57,7 +57,7 @@ resource "aws_wafv2_ip_set" "rate_unlimited_ipv4" {
   name               = "${var.app_name}-rate-unlimited-ipv4"
   scope              = "REGIONAL"
   ip_address_version = "IPV4"
-  addresses          = flatten(values(var.unlimited_ip_rate_limit_ipv4_cidrs))
+  addresses          = var.unlimited_ip_rate_limit_ipv4_cidrs
 
   tags = {
     Name = "${var.app_name}-rate-unlimited-ipv4"
@@ -68,7 +68,7 @@ resource "aws_wafv2_ip_set" "rate_unlimited_ipv6" {
   name               = "${var.app_name}-rate-unlimited-ipv6"
   scope              = "REGIONAL"
   ip_address_version = "IPV6"
-  addresses          = flatten(values(var.unlimited_ip_rate_limit_ipv6_cidrs))
+  addresses          = var.unlimited_ip_rate_limit_ipv6_cidrs
 
   tags = {
     Name = "${var.app_name}-rate-unlimited-ipv6"

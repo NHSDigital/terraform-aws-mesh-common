@@ -62,18 +62,14 @@ variable "default_ip_rate_limit" {
 
 variable "unlimited_ip_rate_limit_ipv4_cidrs" {
   description = "v4 IPs with no rate limit"
-  type        = map(list(string))
-  default = {
-    # e.g. 
-    # nhsd = ["12.34.56.78/32", "23.45.67.89/64"],
-    # other = [...]
-  }
+  type        = list(string)
+  default     = []
 }
 
 variable "unlimited_ip_rate_limit_ipv6_cidrs" {
   description = "v6 IPs with no rate limit"
-  type        = map(list(string))
-  default     = {}
+  type        = list(string)
+  default     = []
 }
 
 variable "specified_ip_rate_limit_ipv4_cidrs" {
