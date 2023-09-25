@@ -66,20 +66,24 @@ variable "unlimited_ip_rate_limit_ipv4_cidrs" {
   default     = []
 }
 
-variable "specified_ip_rate_limit_ipv4_cidrs" {
-  description = "v4 IPs with a specified rate limit"
-  type        = map(tuple([string, number]))
-  default     = {}
-}
-
 variable "unlimited_ip_rate_limit_ipv6_cidrs" {
   description = "v6 IPs with no rate limit"
   type        = list(string)
   default     = []
 }
 
+variable "specified_ip_rate_limit_ipv4_cidrs" {
+  description = "v4 IPs with a specified rate limit"
+  type        = map(tuple([string, number]))
+  default = {
+    # e.g. cidr1 = ["12.34.567.89/32", 1000],
+  }
+}
+
 variable "specified_ip_rate_limit_ipv6_cidrs" {
   description = "v6 IPs with a specified rate limit"
   type        = map(tuple([string, number]))
-  default     = {}
+  default = {
+    # e.g. cidr1 = ["2001:db8::/56", 1000],
+  }
 }

@@ -90,7 +90,7 @@ resource "aws_wafv2_web_acl" "waf_web_acl" {
   dynamic "rule" {
     for_each = var.specified_ip_rate_limit_ipv4_cidrs
     content {
-      name     = "IPRateLimit_${rule.key}"
+      name     = "IPRateLimit_v4_${rule.key}"
       priority = 11
 
       action {
@@ -115,7 +115,7 @@ resource "aws_wafv2_web_acl" "waf_web_acl" {
       }
       visibility_config {
         cloudwatch_metrics_enabled = true
-        metric_name                = rule.key
+        metric_name                = "IPRateLimit_v4_${rule.key}"
         sampled_requests_enabled   = true
       }
     }
@@ -124,7 +124,7 @@ resource "aws_wafv2_web_acl" "waf_web_acl" {
   dynamic "rule" {
     for_each = var.specified_ip_rate_limit_ipv6_cidrs
     content {
-      name     = "IPRateLimit_${rule.key}"
+      name     = "IPRateLimit_v6_${rule.key}"
       priority = 12
 
       action {
@@ -150,7 +150,7 @@ resource "aws_wafv2_web_acl" "waf_web_acl" {
 
       visibility_config {
         cloudwatch_metrics_enabled = true
-        metric_name                = rule.key
+        metric_name                = "IPRateLimit_v6_${rule.key}"
         sampled_requests_enabled   = true
       }
     }
