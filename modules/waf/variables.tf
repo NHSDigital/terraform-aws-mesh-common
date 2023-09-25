@@ -80,6 +80,6 @@ variable "unlimited_ip_rate_limit_ipv6_cidrs" {
 
 variable "specified_ip_rate_limit_ipv6_cidrs" {
   description = "v6 IPs with a specified rate limit"
-  type        = map(number)
+  type        = map(tuple([string, number]))
   default     = {}
 }
