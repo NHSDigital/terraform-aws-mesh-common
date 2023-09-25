@@ -53,3 +53,46 @@ variable "allowed_country_codes" {
     "GB"
   ]
 }
+
+variable "default_ip_rate_limit" {
+  description = "default request limit per IP over 5m"
+  type        = number
+  default     = 100000
+}
+
+variable "unlimited_ip_rate_limit_ipv4_cidrs" {
+  description = "v4 IPs with no rate limit"
+  type        = list(string)
+  default     = []
+}
+
+variable "unlimited_ip_rate_limit_ipv6_cidrs" {
+  description = "v6 IPs with no rate limit"
+  type        = list(string)
+  default     = []
+}
+
+variable "specified_ip_rate_limit_ipv4_cidrs" {
+  description = "v4 IPs with a specified rate limit"
+  type = map(object({
+    cidrs = list(string)
+    limit = number
+  }))
+  default = {
+    # e.g. 
+    # nhsd = {
+    #   cidrs = ["12.34.56.78/32", "23.45.67.89/64"]
+    #   limit = 100000
+    # },
+    # other = {...}
+  }
+}
+
+variable "specified_ip_rate_limit_ipv6_cidrs" {
+  description = "v6 IPs with a specified rate limit"
+  type = map(object({
+    cidrs = list(string)
+    limit = number
+  }))
+  default = {}
+}

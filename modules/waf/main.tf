@@ -10,14 +10,154 @@ resource "aws_wafv2_web_acl" "waf_web_acl" {
     block {}
   }
 
-  # rate_based_statement {
-  #        limit              = 5000
-  #        aggregate_key_type = "IP"
-  #      }
+
+  rule {
+    name     = "VPCAllowList"
+    priority = 1
+
+    action {
+      allow {}
+    }
+
+    statement {
+      ip_set_reference_statement {
+        arn = aws_wafv2_ip_set.allowlist_vpc.arn
+      }
+    }
+
+    visibility_config {
+      cloudwatch_metrics_enabled = true
+      metric_name                = "VPCAllowList"
+      sampled_requests_enabled   = true
+    }
+  }
+
+  rule {
+    name     = "IPRateLimit_default"
+    priority = 10
+
+    action {
+      block {
+        custom_response {
+          response_code = 429
+        }
+      }
+    }
+
+    statement {
+      rate_based_statement {
+        aggregate_key_type = "IP"
+        limit              = var.default_ip_rate_limit
+
+        scope_down_statement {
+          not_statement {
+            statement {
+              or_statement {
+                statement {
+                  ip_set_reference_statement {
+                    arn = aws_wafv2_ip_set.specified_rate_limit_ipv4_all.arn
+                  }
+                }
+                statement {
+                  ip_set_reference_statement {
+                    arn = aws_wafv2_ip_set.specified_rate_limit_ipv6_all.arn
+                  }
+                }
+                statement {
+                  ip_set_reference_statement {
+                    arn = aws_wafv2_ip_set.rate_unlimited_ipv4.arn
+                  }
+                }
+                statement {
+                  ip_set_reference_statement {
+                    arn = aws_wafv2_ip_set.rate_unlimited_ipv6.arn
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
+    visibility_config {
+      cloudwatch_metrics_enabled = true
+      metric_name                = "IPRateLimit_default"
+      sampled_requests_enabled   = true
+    }
+  }
+
+  dynamic "rule" {
+    for_each = var.specified_ip_rate_limit_ipv4_cidrs
+    content {
+      name     = "IPRateLimit_v4_${rule.key}"
+      priority = 11
+
+      action {
+        block {
+          custom_response {
+            response_code = 429
+          }
+        }
+      }
+
+      statement {
+        rate_based_statement {
+          aggregate_key_type = "IP"
+          limit              = rule.value.limit
+
+          scope_down_statement {
+            ip_set_reference_statement {
+              arn = aws_wafv2_ip_set.specified_rate_limit_ipv4[rule.key].arn
+            }
+          }
+        }
+      }
+      visibility_config {
+        cloudwatch_metrics_enabled = true
+        metric_name                = "IPRateLimit_v4_${rule.key}"
+        sampled_requests_enabled   = true
+      }
+    }
+  }
+
+  dynamic "rule" {
+    for_each = var.specified_ip_rate_limit_ipv6_cidrs
+    content {
+      name     = "IPRateLimit_v6_${rule.key}"
+      priority = 11
+
+      action {
+        block {
+          custom_response {
+            response_code = 429
+          }
+        }
+      }
+
+      statement {
+        rate_based_statement {
+          aggregate_key_type = "IP"
+          limit              = rule.value.limit
+
+          scope_down_statement {
+            ip_set_reference_statement {
+              arn = aws_wafv2_ip_set.specified_rate_limit_ipv6[rule.key].arn
+            }
+          }
+        }
+      }
+      visibility_config {
+        cloudwatch_metrics_enabled = true
+        metric_name                = "IPRateLimit_v6_${rule.key}"
+        sampled_requests_enabled   = true
+      }
+    }
+  }
 
   rule {
     name     = "IPAllowList"
-    priority = 1
+    priority = 20
 
     action {
       allow {}
@@ -46,29 +186,8 @@ resource "aws_wafv2_web_acl" "waf_web_acl" {
   }
 
   rule {
-    name     = "VPCAllowList"
-    priority = 2
-
-    action {
-      allow {}
-    }
-
-    statement {
-      ip_set_reference_statement {
-        arn = aws_wafv2_ip_set.allowlist_vpc.arn
-      }
-    }
-
-    visibility_config {
-      cloudwatch_metrics_enabled = true
-      metric_name                = "VPCAllowList"
-      sampled_requests_enabled   = true
-    }
-  }
-
-  rule {
     name     = "IPBlockList"
-    priority = 3
+    priority = 30
 
     action {
       block {}
@@ -103,7 +222,7 @@ resource "aws_wafv2_web_acl" "waf_web_acl" {
         count {}
       }
       name     = rule.value
-      priority = 10
+      priority = 40
       statement {
         managed_rule_group_statement {
           name        = rule.value
