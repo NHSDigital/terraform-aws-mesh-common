@@ -10,44 +10,10 @@ resource "aws_wafv2_web_acl" "waf_web_acl" {
     block {}
   }
 
-  rule {
-    # COMMENT FOR CODE REVIEW (remove after):
-    # the first 2 rules have priority 1/2 and there is short-circuit evaluation,
-    # so it will allow allowlist IPs/VPCs REGARDLESS of all other rules,
-    # e.g. anything in the allowlist ip set is implicitly rate unlimited
-    # if that is the intention, then should we get rid of the rate_unlimited ip sets (YAGNI)?
-    name     = "IPAllowList"
-    priority = 1
-
-    action {
-      allow {}
-    }
-
-    statement {
-      or_statement {
-        statement {
-          ip_set_reference_statement {
-            arn = aws_wafv2_ip_set.allowlist_ipv4.arn
-          }
-        }
-        statement {
-          ip_set_reference_statement {
-            arn = aws_wafv2_ip_set.allowlist_ipv6.arn
-          }
-        }
-      }
-    }
-
-    visibility_config {
-      cloudwatch_metrics_enabled = true
-      metric_name                = "IPAllowList"
-      sampled_requests_enabled   = true
-    }
-  }
 
   rule {
     name     = "VPCAllowList"
-    priority = 2
+    priority = 1
 
     action {
       allow {}
@@ -67,60 +33,8 @@ resource "aws_wafv2_web_acl" "waf_web_acl" {
   }
 
   rule {
-    name     = "IPBlockList"
-    priority = 3
-
-    action {
-      block {}
-    }
-
-    statement {
-      or_statement {
-        statement {
-          ip_set_reference_statement {
-            arn = aws_wafv2_ip_set.blocklist_ipv4.arn
-          }
-        }
-        statement {
-          ip_set_reference_statement {
-            arn = aws_wafv2_ip_set.blocklist_ipv6.arn
-          }
-        }
-      }
-    }
-
-    visibility_config {
-      cloudwatch_metrics_enabled = true
-      metric_name                = "IPBlockList"
-      sampled_requests_enabled   = true
-    }
-  }
-
-  dynamic "rule" {
-    for_each = var.managed_rules
-    content {
-      override_action {
-        count {}
-      }
-      name     = rule.value
-      priority = 10
-      statement {
-        managed_rule_group_statement {
-          name        = rule.value
-          vendor_name = "AWS"
-        }
-      }
-      visibility_config {
-        cloudwatch_metrics_enabled = true
-        metric_name                = rule.value
-        sampled_requests_enabled   = true
-      }
-    }
-  }
-
-  rule {
     name     = "IPRateLimit_default"
-    priority = 20
+    priority = 10
 
     action {
       block {
@@ -177,7 +91,7 @@ resource "aws_wafv2_web_acl" "waf_web_acl" {
     for_each = var.specified_ip_rate_limit_ipv4_cidrs
     content {
       name     = "IPRateLimit_${rule.key}"
-      priority = 21
+      priority = 11
 
       action {
         block {
@@ -211,7 +125,7 @@ resource "aws_wafv2_web_acl" "waf_web_acl" {
     for_each = var.specified_ip_rate_limit_ipv6_cidrs
     content {
       name     = "IPRateLimit_${rule.key}"
-      priority = 22
+      priority = 12
 
       action {
         block {
@@ -239,6 +153,88 @@ resource "aws_wafv2_web_acl" "waf_web_acl" {
         metric_name                = rule.key
         sampled_requests_enabled   = true
       }
+    }
+  }
+
+  rule {
+    name     = "IPBlockList"
+    priority = 20
+
+    action {
+      block {}
+    }
+
+    statement {
+      or_statement {
+        statement {
+          ip_set_reference_statement {
+            arn = aws_wafv2_ip_set.blocklist_ipv4.arn
+          }
+        }
+        statement {
+          ip_set_reference_statement {
+            arn = aws_wafv2_ip_set.blocklist_ipv6.arn
+          }
+        }
+      }
+    }
+
+    visibility_config {
+      cloudwatch_metrics_enabled = true
+      metric_name                = "IPBlockList"
+      sampled_requests_enabled   = true
+    }
+  }
+
+  dynamic "rule" {
+    for_each = var.managed_rules
+    content {
+      override_action {
+        count {}
+      }
+      name     = rule.value
+      priority = 30
+      statement {
+        managed_rule_group_statement {
+          name        = rule.value
+          vendor_name = "AWS"
+        }
+      }
+      visibility_config {
+        cloudwatch_metrics_enabled = true
+        metric_name                = rule.value
+        sampled_requests_enabled   = true
+      }
+    }
+  }
+
+  rule {
+    name     = "IPAllowList"
+    priority = 40
+
+    action {
+      allow {}
+    }
+
+    statement {
+      or_statement {
+        statement {
+          ip_set_reference_statement {
+            arn = aws_wafv2_ip_set.allowlist_ipv4.arn
+          }
+        }
+        statement {
+          ip_set_reference_statement {
+            arn = aws_wafv2_ip_set.allowlist_ipv6.arn
+          }
+        }
+      }
+    }
+
+    visibility_config {
+      cloudwatch_metrics_enabled = true
+      metric_name                = "IPAllowList"
+      sampled_requests_enabled   = true
     }
   }
 
