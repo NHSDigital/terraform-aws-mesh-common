@@ -104,7 +104,7 @@ resource "aws_wafv2_web_acl" "waf_web_acl" {
       statement {
         rate_based_statement {
           aggregate_key_type = "IP"
-          limit              = rule.value[1]
+          limit              = rule.value.limit
 
           scope_down_statement {
             ip_set_reference_statement {
@@ -125,7 +125,7 @@ resource "aws_wafv2_web_acl" "waf_web_acl" {
     for_each = var.specified_ip_rate_limit_ipv6_cidrs
     content {
       name     = "IPRateLimit_v6_${rule.key}"
-      priority = 12
+      priority = 11
 
       action {
         block {
@@ -138,7 +138,7 @@ resource "aws_wafv2_web_acl" "waf_web_acl" {
       statement {
         rate_based_statement {
           aggregate_key_type = "IP"
-          limit              = rule.value[1]
+          limit              = rule.value.limit
 
           scope_down_statement {
             ip_set_reference_statement {
@@ -147,7 +147,6 @@ resource "aws_wafv2_web_acl" "waf_web_acl" {
           }
         }
       }
-
       visibility_config {
         cloudwatch_metrics_enabled = true
         metric_name                = "IPRateLimit_v6_${rule.key}"
