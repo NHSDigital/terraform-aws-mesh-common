@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "terraform_aws_mesh_common"
-version = "0.0.2"
+version = "0.0.7"
 description = ""
 authors = ["mesh"]
 license = "MIT"
