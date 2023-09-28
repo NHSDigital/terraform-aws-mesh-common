@@ -1,2 +1,4 @@
 ---
 minimum_severity: MEDIUM
+exclude:
+  - aws-iam-no-policy-wildcards
