@@ -50,7 +50,7 @@ module "lambda_function" {
 
 
   name        = "${var.env}-${var.name}"
-  file_path   = "${path.module}${var.file_path}"
+  file_path   = var.file_path
   role_json   = data.aws_iam_policy_document.lambda_jwks_rotate_policy.json
   memory_size = 128
 
