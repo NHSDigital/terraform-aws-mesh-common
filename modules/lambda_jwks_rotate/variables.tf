@@ -12,18 +12,40 @@ variable "account" {
   }
 }
 
-variable "account_vpc" {
-  description = "account vpc composite object"
-  type = object({
-    id = string
-    subnet = object({
-      private = map(object({
-        id = string
-      }))
-    })
-    interface-endpoint-sg-ids = map(string)
-    gateway-prefix-list-ids   = map(string)
-  })
+variable "region" {
+  type        = string
+  default     = "eu-west-2"
+  description = "aws region name"
+}
+
+variable "vpc_id" {
+  description = "The VPC id for the vpc in which the lambda will reside"
+  type        = string
+}
+
+variable "logs_vpc_endpoint_sg_id" {
+  description = "The security group id for the cloudwatch logs vpc endpoint"
+  type        = string
+}
+
+variable "secrets_manager_interface_endpoint_sg_ids" {
+  description = "The security group ids for the secrets manager interface endpoint"
+  type        = string
+}
+
+variable "ssm_interface_endpoint_sg_ids" {
+  description = "The security group ids for the ssm interface endpoint"
+  type        = string
+}
+
+variable "s3_gateway_prefix_list_ids" {
+  description = "The prefix list ids for the s3 gateway"
+  type        = string
+}
+
+variable "subnet_ids" {
+  description = "The list of subnet ids in which this lambda will run"
+  type        = list(string)
 }
 
 variable "env" {
@@ -31,10 +53,9 @@ variable "env" {
   type        = string
 }
 
-variable "zip_output_path" {
-  description = "The relative path to output the lambda function zip file"
+variable "file_path" {
+  description = "The relative file path to the zipped source code for the lambda function"
   type        = string
-  default     = "../../../lambda/dist/jwks_rotate.zip"
 }
 
 variable "lambda_layers" {

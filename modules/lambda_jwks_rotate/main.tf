@@ -46,15 +46,17 @@ module "lambda_function" {
   source  = "../lambda_function"
   account = var.account
   runtime = "python3.11"
+  region  = var.region
+
 
   name        = "${var.env}-${var.name}"
-  file_path   = "${path.module}${var.zip_output_path}}"
+  file_path   = "${path.module}${var.file_path}"
   role_json   = data.aws_iam_policy_document.lambda_jwks_rotate_policy.json
   memory_size = 128
 
-  subnet_ids              = values(var.account_vpc.subnet.private)[*].id
-  vpc_id                  = var.account_vpc.id
-  logs_vpc_endpoint_sg_id = var.account_vpc.interface-endpoint-sg-ids["logs"]
+  subnet_ids              = var.subnet_ids
+  vpc_id                  = var.vpc_id
+  logs_vpc_endpoint_sg_id = var.logs_vpc_endpoint_sg_id
   alarm_description       = "${var.env}-${var.name} invocation exception. See https://nhsd-confluence.digital.nhs.uk/display/MESH/KOP-023+-+Identify+Causes+of+Slack+Alerts"
 
   environment = merge(
@@ -100,7 +102,7 @@ resource "aws_security_group_rule" "lambda_jwks_rotate_to_s3" {
   security_group_id = module.lambda_function.sg_id
   description       = "to s3"
   prefix_list_ids = [
-    var.account_vpc.gateway-prefix-list-ids["s3"]
+    var.s3_gateway_prefix_list_ids
   ]
 }
 
@@ -111,7 +113,7 @@ resource "aws_security_group_rule" "lambda_jwks_rotate_to_secretsmanager" {
   protocol                 = "tcp"
   security_group_id        = module.lambda_function.sg_id
   description              = "to secretsmanager"
-  source_security_group_id = var.account_vpc.interface-endpoint-sg-ids["secretsmanager"]
+  source_security_group_id = var.secrets_manager_interface_endpoint_sg_ids
 }
 
 resource "aws_security_group_rule" "lambda_jwks_rotate_to_ssm" {
@@ -121,5 +123,5 @@ resource "aws_security_group_rule" "lambda_jwks_rotate_to_ssm" {
   protocol                 = "tcp"
   security_group_id        = module.lambda_function.sg_id
   description              = "to ssm"
-  source_security_group_id = var.account_vpc.interface-endpoint-sg-ids["ssm"]
+  source_security_group_id = var.ssm_interface_endpoint_sg_ids
 }
