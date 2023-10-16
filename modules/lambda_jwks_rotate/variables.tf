@@ -26,16 +26,6 @@ variable "account_vpc" {
   })
 }
 
-# variable "account_ids" {
-#   type = map(string)
-# }
-
-# variable "region" {
-#   type        = string
-#   default     = "eu-west-2"
-#   description = "aws region name"
-# }
-
 variable "env" {
   description = "The environment name"
   type        = string
