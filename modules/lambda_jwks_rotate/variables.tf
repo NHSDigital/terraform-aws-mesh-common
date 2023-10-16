@@ -103,7 +103,7 @@ variable "jwks_min_keys_retained" {
   type        = number
   validation {
     condition     = var.jwks_min_keys_retained > 1
-    error_message = "value must be greater than 1"
+    error_message = "Value must be greater than 1."
   }
 }
 
@@ -113,7 +113,7 @@ variable "jwks_min_days_retained" {
   default     = 30
   validation {
     condition     = var.jwks_min_days_retained > 6
-    error_message = "value must be greater than 6"
+    error_message = "Value must be greater than 6."
   }
 }
 
