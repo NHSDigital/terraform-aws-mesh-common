@@ -45,7 +45,6 @@ data "aws_iam_policy_document" "lambda_jwks_rotate_policy" {
 module "lambda_function" {
   source  = "../lambda_function"
   account = var.account
-  runtime = "python3.11"
   region  = var.region
 
   name      = "${var.env}-${var.name}"
@@ -72,6 +71,7 @@ module "lambda_function" {
     )
   )
 
+  runtime           = var.lambda_runtime
   layers            = var.lambda_layers
   alarm_actions     = var.lambda_alarm_actions
   alarm_description = var.lambda_alarm_description
