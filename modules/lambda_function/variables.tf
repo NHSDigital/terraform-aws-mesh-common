@@ -43,7 +43,7 @@ variable "handler" {
 variable "runtime" {
   description = "Identifier of the function's runtime. See https://docs.aws.amazon.com/lambda/latest/dg/API_CreateFunction.html#SSS-CreateFunction-request-Runtime"
   type        = string
-  default     = "python3.10"
+  default     = "python3.11"
 }
 
 variable "environment" {
