@@ -39,6 +39,10 @@ output "iam_actions" {
       "secretsmanager:PutSecretValue",
     ]
 
+    iam_secretsmanager_create_actions = [
+      "secretsmanager:CreateSecret",
+    ]
+
     iam_secretsmanager_get_put_actions = [
       "secretsmanager:DescribeSecret",
       "secretsmanager:GetSecretValue",
