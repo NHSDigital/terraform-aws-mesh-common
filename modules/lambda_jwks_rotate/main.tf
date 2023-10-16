@@ -48,16 +48,13 @@ module "lambda_function" {
   runtime = "python3.11"
   region  = var.region
 
-
-  name        = "${var.env}-${var.name}"
-  file_path   = var.file_path
-  role_json   = data.aws_iam_policy_document.lambda_jwks_rotate_policy.json
-  memory_size = 128
+  name      = "${var.env}-${var.name}"
+  file_path = var.file_path
+  role_json = data.aws_iam_policy_document.lambda_jwks_rotate_policy.json
 
   subnet_ids              = var.subnet_ids
   vpc_id                  = var.vpc_id
   logs_vpc_endpoint_sg_id = var.logs_vpc_endpoint_sg_id
-  alarm_description       = "${var.env}-${var.name} invocation exception. See https://nhsd-confluence.digital.nhs.uk/display/MESH/KOP-023+-+Identify+Causes+of+Slack+Alerts"
 
   environment = merge(
     merge(
@@ -75,9 +72,11 @@ module "lambda_function" {
     )
   )
 
-  layers        = var.lambda_layers
-  alarm_actions = var.lambda_alarm_actions
-  timeout       = 30
+  layers            = var.lambda_layers
+  alarm_actions     = var.lambda_alarm_actions
+  alarm_description = var.lambda_alarm_description
+  timeout           = var.lambda_timeout
+  memory_size       = var.lambda_memory_size
 }
 
 resource "aws_cloudwatch_event_rule" "schedule" {

@@ -149,3 +149,20 @@ variable "boto_env_vars" {
   type        = map(string)
   default     = {}
 }
+
+variable "lambda_alarm_description" {
+  description = "alarm description for lambda failure"
+  type        = string
+}
+
+variable "lambda_timeout" {
+  description = "lamdba timeout in seconds"
+  type        = number
+  default     = 30
+}
+
+variable "lambda_memory_size" {
+  description = "lamdba memory size in MB"
+  type        = number
+  default     = 128
+}
