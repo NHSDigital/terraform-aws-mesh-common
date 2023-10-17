@@ -37,7 +37,7 @@ data "aws_iam_policy_document" "lambda_jwks_rotate_policy" {
   statement {
     actions = module.iam_actions.iam_actions.iam_ssm_get_put_parameter_actions
     resources = [
-      var.jwks_current_kid_ssm_arn,
+      "${var.base_ssm_parameter_arn}/${var.jwks_current_kid_ssm_name}"
     ]
   }
 
