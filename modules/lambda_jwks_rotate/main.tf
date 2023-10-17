@@ -14,6 +14,7 @@ data "aws_iam_policy_document" "lambda_jwks_rotate_policy" {
 
   statement {
     actions = concat(
+      module.iam_actions.iam_actions.iam_secretsmanager_create_actions,
       module.iam_actions.iam_actions.iam_secretsmanager_put_actions,
       module.iam_actions.iam_actions.iam_secretsmanager_delete_actions
     )
