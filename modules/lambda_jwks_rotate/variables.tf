@@ -158,7 +158,7 @@ variable "lambda_alarm_description" {
 variable "lambda_timeout" {
   description = "lamdba timeout in seconds"
   type        = number
-  default     = 30
+  default     = 90
 }
 
 variable "lambda_memory_size" {
