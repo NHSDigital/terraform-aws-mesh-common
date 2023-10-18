@@ -74,6 +74,11 @@ variable "base_secrets_arn" {
   type        = string
 }
 
+variable "base_ssm_parameter_arn" {
+  description = "base arn for ssm"
+  type        = string
+}
+
 variable "jwks_certs_secrets_id_prefix" {
   description = "secret id prefix for public/private jwks keys"
   type        = string
@@ -86,11 +91,6 @@ variable "jwks_certs_secrets_kms_key_id" {
 
 variable "jwks_certs_secrets_kms_key_arn" {
   description = "kms key arn to use for jwks certs secrets"
-  type        = string
-}
-
-variable "jwks_current_kid_ssm_arn" {
-  description = "ssm param name arn for current kid"
   type        = string
 }
 
