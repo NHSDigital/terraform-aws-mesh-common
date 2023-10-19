@@ -59,7 +59,7 @@ module "lambda_function" {
   environment = merge(
     merge(
       {
-        MESH_ENV                      = var.env
+        JWKS_ENV                      = var.env
         JWKS_JSON_S3_BUCKET_NAME      = var.jwks_json_s3_bucket_name
         JWKS_JSON_S3_KEY              = var.jwks_json_s3_key
         JWKS_CERTS_SECRETS_KMS_KEY_ID = var.jwks_certs_secrets_kms_key_id
