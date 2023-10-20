@@ -86,6 +86,12 @@ resource "aws_cloudwatch_event_rule" "schedule" {
   schedule_expression = var.jwks_schedule_expression
 }
 
+resource "aws_cloudwatch_event_target" "schedule_lambda" {
+  rule      = aws_cloudwatch_event_rule.schedule.name
+  target_id = module.lambda_function.name
+  arn       = module.lambda_function.arn
+}
+
 resource "aws_lambda_permission" "allow_events_bridge_to_run_lambda" {
   statement_id  = "AllowExecutionFromCloudWatch"
   action        = "lambda:InvokeFunction"
