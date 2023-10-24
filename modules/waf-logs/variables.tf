@@ -19,3 +19,9 @@ variable "log_destination_arn" {
   type        = string
   default     = null
 }
+
+variable "region" {
+  description = "The region where the logs are stored"
+  type        = string
+  default     = "eu-west-2"
+}
