@@ -218,6 +218,14 @@ output "iam_actions" {
       "dynamodb:UpdateItem",
     ]
 
+    iam_dynamodb_read_stream_actions = [
+      "dynamodb:GetRecords",
+      "dynamodb:GetShardIterator",
+      "dynamodb:DescribeStream",
+      "dynamodb:ListShards",
+      "dynamodb:ListStreams"
+    ]
+
     iam_ecr_get_authorisation_token = [
       "ecr:GetAuthorizationToken",
     ]
