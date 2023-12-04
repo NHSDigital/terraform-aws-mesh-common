@@ -144,6 +144,18 @@ variable "jwks_schedule_expression" {
   default     = "cron(0 10 ? * 2#1 *)"
 }
 
+
+variable "splunk_firehose_arn" {
+  description = "Destination arn for the cloudwatch log subscription filter"
+  type        = string
+}
+
+variable "splunk_firehose_role_arn" {
+  description = "The role ARN for the cloudwatch log subscription filter"
+  type        = string
+
+}
+
 variable "boto_env_vars" {
   description = "boto env vars, e.g. BOTO_RETRIES_MODE"
   type        = map(string)
