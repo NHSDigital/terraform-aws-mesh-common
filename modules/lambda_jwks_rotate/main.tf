@@ -52,9 +52,11 @@ module "lambda_function" {
   file_path = var.file_path
   role_json = data.aws_iam_policy_document.lambda_jwks_rotate_policy.json
 
-  subnet_ids              = var.subnet_ids
-  vpc_id                  = var.vpc_id
-  logs_vpc_endpoint_sg_id = var.logs_vpc_endpoint_sg_id
+  subnet_ids               = var.subnet_ids
+  vpc_id                   = var.vpc_id
+  logs_vpc_endpoint_sg_id  = var.logs_vpc_endpoint_sg_id
+  splunk_firehose_arn      = var.splunk_firehose_arn
+  splunk_firehose_role_arn = var.splunk_firehose_role_arn
 
   environment = merge(
     merge(
