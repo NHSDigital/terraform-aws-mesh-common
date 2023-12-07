@@ -1,7 +1,7 @@
 
 resource "aws_lambda_event_source_mapping" "this" {
   event_source_arn  = data.aws_dynamodb_table.source.stream_arn
-  function_name     = var.lambda_function_arn
+  function_name     = var.lambda_function_name
   starting_position = var.event_source_mapping_starting_position
   enabled           = var.event_source_mapping_enabled
 
