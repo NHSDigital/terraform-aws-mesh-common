@@ -18,8 +18,8 @@ variable "target_table_kms_arn" {
   type        = string
 }
 
-variable "lambda_function_arn" {
-  description = "The ARN of the lambda function that processes the stream"
+variable "lambda_function_name" {
+  description = "The function name of the lambda function that processes the stream"
   type        = string
 }
 
