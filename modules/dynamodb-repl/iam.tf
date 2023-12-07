@@ -46,7 +46,7 @@ data "aws_iam_policy_document" "this" {
 }
 
 resource "aws_iam_policy" "this" {
-aws_lambda_function  name   = "${var.lambda_function_name}-ddb-repl"
+  name   = "${var.lambda_function_name}-ddb-repl"
   policy = data.aws_iam_policy_document.this.json
 }
 
