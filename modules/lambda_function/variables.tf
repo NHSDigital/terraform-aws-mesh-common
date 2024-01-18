@@ -90,6 +90,7 @@ variable "memory_size" {
 variable "alarm_description" {
   description = "The description for the cloudwatch metric alarm."
   type        = string
+  default     = null
 }
 
 variable "splunk_firehose_arn" {
@@ -120,4 +121,16 @@ variable "deadletter_max_age_seconds" {
   description = "Maximum age of a request that Lambda sends to a function for processing in seconds. Valid values between 60 and 21600."
   type        = number
   default     = 21600
+}
+
+variable "keep_warm" {
+  description = "will send {\"__keep_warm__\": true} requests on keep_warm_schedule_expression"
+  type        = bool
+  default     = false
+}
+
+variable "keep_warm_schedule_expression" {
+  description = "keep warm cloudwatch event schedule .. either cron(...) or  rate(..)"
+  type        = string
+  default     = "rate(4 minutes)"
 }

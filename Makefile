@@ -25,3 +25,9 @@ update:
 
 pre-commit:
 	@poetry run pre-commit run --all-files
+
+format:
+	terraform fmt --recursive
+
+format-check:
+	terraform fmt -check -recursive
