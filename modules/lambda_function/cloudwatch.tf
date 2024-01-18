@@ -15,7 +15,7 @@ resource "aws_cloudwatch_metric_alarm" "lambda_metric_alarm" {
   period              = "60"
   statistic           = "Sum"
   threshold           = "0"
-  alarm_description   = var.alarm_description
+  alarm_description   = coalesce(var.alarm_description, "${var.name} invocation error")
   actions_enabled     = true
   alarm_actions       = var.alarm_actions
 
@@ -33,4 +33,23 @@ resource "aws_cloudwatch_log_subscription_filter" "lambda_logs_to_splunk" {
   filter_pattern  = "{ $.timestamp != \"\" }"
   destination_arn = var.splunk_firehose_arn
   role_arn        = var.splunk_firehose_role_arn
+}
+
+resource "aws_cloudwatch_event_rule" "keep_warm" {
+  count               = var.keep_warm ? 1 : 0
+  name                = "${var.name}-keep-warm"
+  description         = "${var.name}-keep-warm"
+  schedule_expression = var.keep_warm_schedule_expression
+  state               = "ENABLED"
+}
+
+resource "aws_cloudwatch_event_target" "keep_warm" {
+  count     = var.keep_warm ? 1 : 0
+  rule      = aws_cloudwatch_event_rule.keep_warm[0].name
+  target_id = aws_cloudwatch_event_rule.keep_warm[0].name
+  arn       = aws_lambda_function.lambda.arn
+  role_arn  = aws_iam_role.keep_warm[0].arn
+
+  input = "{\"__keep_warm__\": true}"
+
 }
