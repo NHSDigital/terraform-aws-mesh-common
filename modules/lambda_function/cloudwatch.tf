@@ -40,7 +40,6 @@ resource "aws_cloudwatch_event_rule" "keep_warm" {
   name                = "${var.name}-keep-warm"
   description         = "${var.name}-keep-warm"
   schedule_expression = var.keep_warm_schedule_expression
-  state               = "ENABLED"
 }
 
 resource "aws_cloudwatch_event_target" "keep_warm" {
