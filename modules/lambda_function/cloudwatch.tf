@@ -47,8 +47,14 @@ resource "aws_cloudwatch_event_target" "keep_warm" {
   rule      = aws_cloudwatch_event_rule.keep_warm[0].name
   target_id = aws_cloudwatch_event_rule.keep_warm[0].name
   arn       = aws_lambda_function.lambda.arn
-  role_arn  = aws_iam_role.keep_warm[0].arn
+  input     = "{\"__keep_warm__\": true}"
+}
 
-  input = "{\"__keep_warm__\": true}"
-
+resource "aws_lambda_permission" "keep_warm" {
+  count         = var.keep_warm ? 1 : 0
+  statement_id  = "AllowExecutionFromCloudWatch"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.lambda.function_name
+  principal     = "events.amazonaws.com"
+  source_arn    = aws_cloudwatch_event_rule.keep_warm[0].arn
 }
