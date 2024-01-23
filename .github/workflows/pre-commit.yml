@@ -86,3 +86,18 @@ jobs:
           tfsec-version: ${{ env.TFSEC_VERSION }}
           terraform-docs-version: ${{ env.TERRAFORM_DOCS_VERSION }}
           install-tfsec: true
+
+  sonar:
+    runs-on: ubuntu-latest
+    if: github.repository_owner == 'NHSDigital' && github.actor != 'dependabot[bot]' && !contains(github.event.head_commit.message, 'tag release version:')
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: sonar scan
+        uses: ./.github/actions/sonar
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          sonar-token: ${{ secrets.SONAR_TOKEN }}
