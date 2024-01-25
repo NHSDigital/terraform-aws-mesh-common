@@ -34,6 +34,12 @@ jobs:
         with:
           poetry-version: 1.6.1
 
+      - name: sonar scan
+        uses: ./.github/actions/sonar
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          sonar-token: ${{ secrets.SONAR_TOKEN }}
+
       - name: Add poetry plugins
         run: |
           poetry self add "poetry-dynamic-versioning[plugin]"
