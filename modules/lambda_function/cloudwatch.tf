@@ -35,6 +35,27 @@ resource "aws_cloudwatch_log_subscription_filter" "lambda_logs_to_splunk" {
   role_arn        = var.splunk_firehose_role_arn
 }
 
+
+resource "aws_cloudwatch_log_subscription_filter" "logs_to_dest" {
+  for_each        = local.log_delivery_destinations
+  name            = "${var.account}_${var.name}_${each.key}"
+  log_group_name  = aws_cloudwatch_log_group.lambda.name
+  filter_pattern  = each.value.filter_pattern
+  destination_arn = each.value.destination_arn
+  role_arn        = each.value.role_arn
+}
+
+
+locals {
+  log_delivery_destinations = {
+    for k, v in var.log_delivery_destinations : k => {
+      destination_arn = v.destination_arn,
+      role_arn        = v.role_arn,
+      filter_pattern  = coalesce(v.filter_pattern, "{ $.timestamp != \"\" }")
+    }
+  }
+}
+
 resource "aws_cloudwatch_event_rule" "keep_warm" {
   count               = var.keep_warm ? 1 : 0
   name                = "${var.name}-keep-warm"

@@ -134,3 +134,23 @@ variable "keep_warm_schedule_expression" {
   type        = string
   default     = "rate(4 minutes)"
 }
+
+variable "log_delivery_destinations" {
+  description = <<EOT
+    log_delivery_destinations = {
+      name: {
+        destination_arn : "aws_cloudwatch_log_subscription_filter destination arn"
+        role_arn: "aws_cloudwatch_log_subscription_filter role arn"
+        filter_pattern: "log filter pattern default `{ $.timestamp != \"\" }`"
+      }
+    }
+  EOT
+  type = map(
+    object({
+      destination_arn : string,
+      role_arn : string,
+      filter_pattern : optional(string)
+    })
+  )
+  default = {}
+}
